@@ -36,4 +36,5 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":busybox"))
     implementation(project(":service"))
+    implementation(project(":io"))
 }

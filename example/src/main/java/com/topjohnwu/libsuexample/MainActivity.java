@@ -29,7 +29,9 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.View;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -37,8 +39,11 @@ import com.topjohnwu.libsuexample.databinding.ActivityMainBinding;
 import com.topjohnwu.superuser.BusyBoxInstaller;
 import com.topjohnwu.superuser.CallbackList;
 import com.topjohnwu.superuser.Shell;
+import com.topjohnwu.superuser.io.SuFile;
+import com.topjohnwu.superuser.io.SuRandomAccessFile;
 import com.topjohnwu.superuser.ipc.RootService;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -206,14 +211,45 @@ public class MainActivity extends Activity implements Handler.Callback {
         });
 
         // test_sync is defined in R.raw.bashrc, pre-loaded in ExampleInitializer
-        binding.testSync.setOnClickListener(v ->
-                Shell.sh("test_sync").to(consoleList).exec());
+//        binding.testSync.setOnClickListener(v ->
+//                Shell.sh("test_sync").to(consoleList).exec());
+        binding.testSync.setText("Test File");
+        binding.testSync.setOnClickListener(this::runFileTest);
 
         // test_async is defined in R.raw.bashrc, pre-loaded in ExampleInitializer
-        binding.testAsync.setOnClickListener(v ->
-                Shell.sh("test_async").to(consoleList).submit());
+//        binding.testAsync.setOnClickListener(v ->
+//                Shell.sh("test_async").to(consoleList).submit());
+        binding.testAsync.setText("Test SuFile");
+        binding.testAsync.setOnClickListener(this::runSuFileTests);
 
         binding.clear.setOnClickListener(v -> binding.console.setText(""));
+
+    }
+
+    private void runFileTest(View view) {
+        Toast.makeText(this, "TEST FILE", Toast.LENGTH_SHORT).show();
+        try {
+            SuRandomAccessFile file = SuRandomAccessFile.open(new File("/system/etc/hosts"), "r");
+            String line;
+            while ((line = file.readLine()) != null) {
+                Log.e("TEST", line);
+            }
+        } catch (IOException e) {
+            Log.e("TEST", "error", e);
+        }
+    }
+
+    private void runSuFileTests(View view) {
+        Toast.makeText(this, "TEST SUFILE", Toast.LENGTH_SHORT).show();
+        try {
+            SuRandomAccessFile file = SuRandomAccessFile.open(new SuFile("/system/etc/hosts"), "r");
+            String line;
+            while ((line = file.readLine()) != null) {
+                Log.e("TEST", line);
+            }
+        } catch (IOException e) {
+            Log.e("TEST", "error", e);
+        }
     }
 
     /**
